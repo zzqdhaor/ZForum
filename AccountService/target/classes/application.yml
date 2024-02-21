@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/forum
+    username: root
+    password: 12345
+  application:
+    name: account-service
+  session:
+    store-type: redis
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: localhost:8848
+      namespace: ""
+      group: DEFAULT_GROUP
+      application: seata-server
+      username: nacos
+      password: nacos
+  tx-service-group: seata-demo
+  service:
+    vgroup-mapping:
+      seata-demo: default
+  data-source-proxy-mode: XA
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
