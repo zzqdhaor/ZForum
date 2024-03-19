@@ -1,0 +1,2 @@
+ZForum是一款微服务论坛系统。
+后端系统分为3部分，分别为Gateway，AccountService和ForumService。其中，Gateway是使用SpringGateway实现的网关，AccountService负责管理用户账户，ForumService用于管理用户发帖。各个服务之间使用Nacos作为服务发现，Seata控制分布式事务。MyBatis负责连接数据库。使用SpringSession + Redis实现了各个服务之间的Session共享。OpenFeign实现微服务之间的调用。前端使用Vue3 + Vite构建。
