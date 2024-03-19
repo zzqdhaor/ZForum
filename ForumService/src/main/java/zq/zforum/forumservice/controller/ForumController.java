@@ -31,6 +31,12 @@ public class ForumController {
         return R.success("OK");
     }
 
+    @PostMapping("/delete-thread")
+    public R<String> deleteThread(Integer id) {
+        service.deleteThread(id);
+        return R.success("OK");
+    }
+
     @GetMapping("/get-threads-by-user-id")
     public R<List<Thread>> getThreadsByUserId(Integer userId) {
         return R.success(service.getThreadsByUserId(userId));
@@ -79,5 +85,12 @@ public class ForumController {
     public R<List<Info>> getInfo() {
         return R.success(service.getInfo());
     }
+
+    @GetMapping("/carousel")
+    public R<List<Carousel>> getCarousel() {
+        return R.success(service.getCarousel());
+    }
+
+
 
 }

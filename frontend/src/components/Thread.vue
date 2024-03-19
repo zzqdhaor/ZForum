@@ -45,8 +45,12 @@ import {Back} from "@element-plus/icons-vue";
         <a style="text-decoration: none" :href="'/main/user/' + threadInfo.userId">{{threadInfo.username}}</a>
       </div>
       <div style="margin-left: 40px">
-        {{threadInfo.text}} <br/>
-        <el-image v-for="pic in reply.pics" style="width: 100px" :src="'http://localhost:10000/api/forum/pic?picId=' +pic"/>
+      <span style="display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: pre-wrap; font-size: 15px; font-weight: 400">
+        {{threadInfo.text}}
+
+      </span>
+         <br/>
+        <el-image v-for="pic in threadInfo.pics" style="width: 100px" :src="'http://localhost:10000/api/forum/pic?picId=' +pic"/>
       </div>
     </el-space>
   </el-card>
@@ -130,6 +134,8 @@ export default {
     let that = this
     axios.get("http://localhost:10000/api/forum/thread-info?id=" + this.$route.params.id).then(r => {
       if (r.data.status === 0) {
+        r.data.info.pics = r.data.info.pics.split(',')
+        if (r.data.info.pics[0] === '') r.data.info.pics = []
         that.threadInfo = r.data.info
       }
     })

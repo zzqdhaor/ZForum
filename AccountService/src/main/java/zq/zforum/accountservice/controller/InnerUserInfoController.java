@@ -9,14 +9,16 @@ import zq.zforum.accountservice.service.UserInfoService;
 @RequestMapping("/api/account/inner")
 public class InnerUserInfoController {
 
+    @Autowired
+    UserInfoService service;
+
     @PostMapping("add-thread-count/{userId}")
     public R<String> addThreadCount(@PathVariable int userId) {
         service.addThreadCount(userId);
         return R.success("OK");
     }
 
-    @Autowired
-    UserInfoService service;
+
 
     @GetMapping("/get-username-by-id/{id}")
     public R<String> getUsernameById(@PathVariable("id") int id) {

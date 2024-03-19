@@ -12,12 +12,34 @@ import Thread from "@/components/Thread.vue";
 import Main from "@/components/Main.vue";
 import User from "@/components/User.vue";
 import Board from "@/components/Board.vue";
-window.remoteAddr="http://localhost:10000"
+import Admin from "@/components/Admin.vue";
+import AdminUser from "@/components/AdminUser.vue";
+import AdminInfo from "@/components/AdminInfo.vue";
+import AdminThread from "@/components/AdminThread.vue";
 const routes = [
     {
         path: '/',
         redirect: '/login',
         children: [
+            {
+                path: '/admin',
+                component: Admin,
+                redirect: '/admin/user',
+                children: [
+                    {
+                        path: '/admin/thread',
+                        component: AdminThread
+                    },
+                    {
+                        path: '/admin/user',
+                        component: AdminUser
+                    },
+                    {
+                        path: '/admin/info',
+                        component: AdminInfo
+                    }
+                ]
+            },
             {
                 path: '/login',
                 component: Login
@@ -72,4 +94,5 @@ axios.defaults.withCredentials = true
 //整个应用支持路由。
 app.use(router)
 app.use(ElementPlus)
+app.config.globalProperties.$address = "http://localhost:10000"
 app.mount('#app')

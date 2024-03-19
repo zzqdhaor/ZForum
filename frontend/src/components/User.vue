@@ -35,6 +35,9 @@ import {Calendar, Comment} from "@element-plus/icons-vue";
             <Comment/>
           </el-icon>
           {{t.replyNum}}
+          <el-button @click.stop="requestDeletePost(t.id)" type="danger">
+            删除
+          </el-button>
         </el-space>
       </el-card>
     </el-tab-pane>
@@ -103,6 +106,17 @@ export default {
     },
     goTo(id) {
       this.$router.replace('/main/thread/' + id)
+    },
+    requestDeletePost(id) {
+      axios.post("http://localhost:10000/api/forum/delete-thread?id=" + id).then(r => {
+        if (r.data.status === 0) {
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })
+          this.load('0')
+        }
+      })
     },
     goToUser(id) {
       this.$router.replace('/main/user/' + id)

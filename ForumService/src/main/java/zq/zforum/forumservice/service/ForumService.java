@@ -3,9 +3,7 @@ package zq.zforum.forumservice.service;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import zq.zforum.Info;
-import zq.zforum.Reply;
-import zq.zforum.ReplyToReply;
+import zq.zforum.*;
 import zq.zforum.Thread;
 
 import java.io.IOException;
@@ -32,4 +30,8 @@ public interface ForumService {
     List<Thread> getThreadsByUserId(Integer userId);
 
     List<Info> getInfo();
+
+    void deleteThread(int id);
+
+    List<Carousel> getCarousel();
 }

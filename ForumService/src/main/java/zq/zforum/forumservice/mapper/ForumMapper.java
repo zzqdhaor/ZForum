@@ -1,12 +1,7 @@
 package zq.zforum.forumservice.mapper;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-import zq.zforum.Info;
-import zq.zforum.Reply;
-import zq.zforum.ReplyToReply;
+import org.apache.ibatis.annotations.*;
+import zq.zforum.*;
 import zq.zforum.Thread;
 
 import java.util.List;
@@ -33,7 +28,7 @@ public interface ForumMapper {
     void saveReplyToReply(ReplyToReply rtr);
 
     @Update("update thread set replyNum=replyNum+1 where id=#{threadId}")
-    int addThreadReplyNum(int threadId);
+    void addThreadReplyNum(int threadId);
 
     @Select("select user.username as username,text,pics,userId,reply_to_reply.id as id from reply_to_reply inner join user on user.id=reply_to_reply.userId where replyId=#{replyId}")
     List<ReplyToReply> getReplyToReplyByReplyId(int replyId);
@@ -43,4 +38,10 @@ public interface ForumMapper {
 
     @Select("select * from info order by pubDate desc")
     List<Info> getInfo();
+
+    @Delete("delete from thread where id=#{id} and userId=#{userId}")
+    void deleteThread(int id, int userId);
+
+    @Select("select * from carousel")
+    List<Carousel> getCarousel();
 }

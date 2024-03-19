@@ -6,10 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import zq.zforum.Info;
-import zq.zforum.Reply;
-import zq.zforum.ReplyToReply;
-import zq.zforum.Thread;
+import zq.zforum.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import zq.zforum.Thread;
 import zq.zforum.forumservice.mapper.ForumMapper;
 
 @Service
@@ -156,5 +154,15 @@ public class ForumServiceImpl implements ForumService {
     @Override
     public List<Info> getInfo() {
         return mapper.getInfo();
+    }
+
+    @Override
+    public void deleteThread(int id) {
+        mapper.deleteThread(id, getUserId());
+    }
+
+    @Override
+    public List<Carousel> getCarousel() {
+        return mapper.getCarousel();
     }
 }

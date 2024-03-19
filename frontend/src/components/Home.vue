@@ -5,15 +5,16 @@ import {Calendar, Comment, User} from "@element-plus/icons-vue";
 
 <template>
   <el-dialog title="发布新贴子" v-model="show.newThread">
-    标题
-    <el-input  v-model="title"/>
-    内容
-    <el-input type="textarea" v-model="text"/>
-    图片
-    <el-button style="margin: 10px" @click="addPics">添加</el-button>
     <form ref="form" enctype="multipart/form-data" method="post" action="http://localhost:10000/api/forum/new-thread">
+      标题
+      <el-input v-model="title"/>
+      内容
+      <br/>
+      <textarea name="text"/>
+      <br/>
+      图片
+      <el-button style="margin: 10px" @click="addPics">添加</el-button>
       <input hidden="hidden" name="title" :value="title"/>
-      <input hidden="hidden" name="text" :value="text"/>
       <input style="margin: 10px" v-for="file in files" :name="file" type="file"/>
     </form>
     <el-button @click="() => {
@@ -21,43 +22,59 @@ import {Calendar, Comment, User} from "@element-plus/icons-vue";
       }">提交
     </el-button>
   </el-dialog>
-  <el-button type="primary" icon="Plus" @click="() => {show.newThread = true}">发帖</el-button>
+  <div style="text-align: center">
+    <el-carousel style="margin-bottom: 40px">
+      <el-carousel-item v-for="c in carousel">
+        <el-image style="width: 100%; height: 100%" @click="openLink(c.link)" :src="'http://localhost:10000/api/forum/pic?picId=' + c.pic"/>
+      </el-carousel-item>
+    </el-carousel>
+  </div>
+
+  <div style="display: flex">
+    <el-button style="margin-left: 20px" type="primary" icon="Plus" @click="() => {show.newThread = true}">发帖</el-button>
+    <el-radio-group style="margin-left: 60px" v-model="sort">
+      <el-radio-button label="post">按发帖</el-radio-button>
+      <el-radio-button label="reply">按回复</el-radio-button>
+    </el-radio-group>
+  </div>
   <br/>
   <div style="margin: 10px">
-    <div v-for="t in threads">
-      <el-row>
-        <el-col :span="8">
-          <div style="display:flex;justify-content: center; align-items:center; height: 100%">
-            <router-link style="text-decoration: none; margin: 3px" :to="{name: 'thread', params: {id: t.id}}">{{ t.title }}</router-link>
-          </div>
-        </el-col>
-        <el-col :span="5">
-          <el-icon color="#666" :size="15" style="margin: 10px">
-            <User/>
-          </el-icon>
-          <span style="color: #666">{{ t.username }}</span>
-        </el-col>
-        <el-col :span="8">
-          <el-icon color="#666" :size="15" style="margin: 10px">
-            <Calendar/>
-          </el-icon>
-          <span style="color: #666">{{ t.postDate.replace('T', ' ') }}</span>
-        </el-col>
-        <el-col :span="3">
-          <el-icon color="#666" :size="15" style="margin: 10px">
-            <Comment/>
-          </el-icon>
-          <span style="color: #666">{{ t.replyNum }}</span>
-        </el-col>
-      </el-row>
+    <el-card @click="() => {$router.push({name: 'thread', params: {id: t.id}})}" shadow="hover" style="margin: 10px" v-for="t in threads">
+      <span style="font-size: 18px; font-weight: 500; color: rgb(51, 51, 51)">
+        {{ t.title }}
+      </span>
+      <br/>
+      <span style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis; white-space: pre-wrap; font-size: 15px; font-weight: 400; color: #666">
+        {{t.text}}
+      </span>
+      <br/>
+      <el-space>
+        <el-image v-if="t.pics[0] !== ''" v-for="pic in t.pics" style="width: 230px" :src="'http://localhost:10000/api/forum/pic?picId=' +pic"/>
+      </el-space>
+      <br/>
+      <el-icon color="#666" :size="15" style="margin: 10px">
+        <User/>
+      </el-icon>
+      <span style="color: #666">
+        <a :href="'/main/user/' + t.userId">{{ t.username }}</a>
+      </span>
+      <el-icon color="#666" :size="15" style="margin: 10px">
+        <Calendar/>
+      </el-icon>
+      <span style="color: #666">{{ t.postDate.replace('T', ' ') }}</span>
+      <el-icon color="#666" :size="15" style="margin: 10px">
+        <Comment/>
+      </el-icon>
+      <span style="color: #666">{{ t.replyNum }}</span>
       <div style="text-align: left; width: 100%">
-        <div style="width: 100%" direction="horizontal">
+        <div style="width: 100%">
         </div>
       </div>
-    </div>
+    </el-card>
   </div>
   <div style="width: 100%; text-align: center">
-    <el-pagination style="justify-content: center" background layout="prev, pager, next" :page-count="totalPage"  @current-change="loadPage"/>
+    <el-pagination style="justify-content: center" background layout="prev, pager, next" :page-count="totalPage"
+                   @current-change="loadPage"/>
   </div>
 </template>
 
@@ -71,11 +88,26 @@ export default {
       this.files.push("file" + this.num);
       this.num++;
     },
+    openLink(link) {
+      window.open(link)
+    },
+    getCarousel() {
+      let that = this
+      axios.get("http://localhost:10000/api/forum/carousel").then(r => {
+        if (r.data.status === 0) {
+          that.carousel = r.data.info
+        }
+      })
+    },
     loadPage(val) {
       let that = this
       if (val === undefined) val = 1
       axios.get("http://localhost:10000/api/forum/threads?page=" + val).then(r => {
         if (r.data.status === 0) {
+          r.data.info.forEach(t => {
+            t.pics = t.pics.split(',')
+            if (t.pics[0] === '') t.pics = []
+          })
           that.threads = r.data.info
         }
         console.log(r.data)
@@ -93,11 +125,14 @@ export default {
       num: 0,
       threads: [],
       page: 1,
-      totalPage: 2
+      totalPage: 2,
+      sort: 'post',
+      carousel: []
     }
   },
   mounted() {
     this.loadPage();
+    this.getCarousel();
   }
 }
 </script>

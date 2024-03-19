@@ -47,7 +47,7 @@ import Thread from "@/components/Thread.vue";
       </el-header>
       <el-container>
         <el-aside width="200px">
-          <el-menu router>
+          <el-menu router style="height: 100%">
             <el-menu-item index="/main/home">
               <el-icon>
                 <ChatRound/>
