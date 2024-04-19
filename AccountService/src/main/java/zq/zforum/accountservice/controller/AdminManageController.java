@@ -27,5 +27,6 @@ public class AdminManageController {
     @PostMapping("/change-password")
     public R<String> changePassword(String password, String id) {
         service.changePassword(password, id);
+        return R.success("OK");
     }
 }
