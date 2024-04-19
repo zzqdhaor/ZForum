@@ -5,12 +5,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import zq.zforum.*;
 import zq.zforum.Thread;
+import zq.zforum.forumservice.search.ElasticThread;
 import zq.zforum.forumservice.service.ForumService;
 
 import java.io.IOException;
@@ -91,6 +93,10 @@ public class ForumController {
         return R.success(service.getCarousel());
     }
 
+    @GetMapping("/search")
+    public R<List<SearchHit<ElasticThread>>> search(String keyword) {
+        return R.success(service.search(keyword));
+    }
 
 
 }

@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Service;
 import zq.zforum.*;
 
@@ -20,6 +22,8 @@ import java.util.UUID;
 
 import zq.zforum.Thread;
 import zq.zforum.forumservice.mapper.ForumMapper;
+import zq.zforum.forumservice.search.ElasticSearchRepository;
+import zq.zforum.forumservice.search.ElasticThread;
 
 @Service
 public class ForumServiceImpl implements ForumService {
@@ -32,6 +36,12 @@ public class ForumServiceImpl implements ForumService {
 
     @Autowired
     ForumMapper mapper;
+
+    @Autowired
+    ElasticsearchTemplate esTemplate;
+
+    @Autowired
+    ElasticSearchRepository esRepo;
 
     private String buildCommaSeperatedString(List<String> list) {
         StringBuilder builder = new StringBuilder();
@@ -76,6 +86,7 @@ public class ForumServiceImpl implements ForumService {
         String title = request.getParameter("title");
         String text = request.getParameter("text");
         Thread thread = new Thread();
+        ElasticThread et = new ElasticThread();
         thread.setTitle(title);
         thread.setText(text);
         List<String> pics = savePics(request);
@@ -83,6 +94,13 @@ public class ForumServiceImpl implements ForumService {
         thread.setPostDate(LocalDateTime.now());
         thread.setLastReplyDate(LocalDateTime.now());
         thread.setUserId(getUserId());
+        et.setTitle(title);
+        et.setText(text);
+        et.setPics(buildCommaSeperatedString(pics));
+        et.setPostDate(System.currentTimeMillis());
+        et.setLastReplyDate(System.currentTimeMillis());
+        et.setUserId(getUserId());
+        esTemplate.save(et);
         accountService.addThreadCount(getUserId());
         mapper.createNewThread(thread);
         return thread.getUserId() != null;
@@ -164,5 +182,10 @@ public class ForumServiceImpl implements ForumService {
     @Override
     public List<Carousel> getCarousel() {
         return mapper.getCarousel();
+    }
+
+    @Override
+    public List<SearchHit<ElasticThread>> search(String keyword) {
+        return esRepo.findByTitleOrText(keyword, keyword);
     }
 }

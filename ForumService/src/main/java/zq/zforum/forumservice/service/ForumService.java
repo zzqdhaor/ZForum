@@ -3,8 +3,10 @@ package zq.zforum.forumservice.service;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import zq.zforum.*;
 import zq.zforum.Thread;
+import zq.zforum.forumservice.search.ElasticThread;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,4 +36,6 @@ public interface ForumService {
     void deleteThread(int id);
 
     List<Carousel> getCarousel();
+
+    List<SearchHit<ElasticThread>> search(String keyword);
 }
